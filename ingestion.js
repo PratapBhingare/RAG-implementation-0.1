@@ -1,8 +1,9 @@
+import dotenv from "dotenv";
 import { PDFParse } from "pdf-parse";
 import fs from "fs/promises";
 import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
 import { CohereEmbeddings } from "@langchain/cohere";
-import dotenv from "dotenv";
+import { Pinecone } from "@pinecone-database/pinecone";
 
 dotenv.config();
 
@@ -30,7 +31,23 @@ const embedding = new CohereEmbeddings({
   apiKey: process.env.COHERE_API_KEY,
 });
 
-
 const vectors = await embedding.embedDocuments(chunk);
 
-// console.log(vectors);
+// initializing pincone client for vector DB
+
+const pc = new Pinecone({ apiKey: process.env.PINECONE_API_KEY });
+
+const index = pc.Index({
+    name:"rag-01",
+    host:"https://rag-01-kbmdfpt.svc.aped-4627-b74a.pinecone.io"
+});
+
+await index.documents.upsert({
+    documents: vectors.map((vector,idx)=>{
+        return{
+            _id:`chunk-${idx}`,
+            embeddings:vector,
+            content:chunk[idx]  
+        }
+    })
+})
