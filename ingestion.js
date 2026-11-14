@@ -1,6 +1,10 @@
 import { PDFParse } from "pdf-parse";
 import fs from "fs/promises";
 import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
+import { CohereEmbeddings } from "@langchain/cohere";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const parser = new PDFParse({
   data: await fs.readFile("./story.pdf"),
@@ -10,12 +14,23 @@ const parser = new PDFParse({
 
 const text = (await parser.getText({ pageJoiner: "" })).text;
 
-
 const textsplitters = new RecursiveCharacterTextSplitter({
   chunkSize: 500,
   chunkOverlap: 100,
-}); 
+});
 
 // converting into chunks
 
 const chunk = await textsplitters.splitText(text);
+
+// implementing embedding
+
+const embedding = new CohereEmbeddings({
+  model: "embed-v5.0-fast",
+  apiKey: process.env.COHERE_API_KEY,
+});
+
+
+const vectors = await embedding.embedDocuments(chunk);
+
+// console.log(vectors);
