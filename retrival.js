@@ -20,6 +20,3 @@ const model = new ChatCohere({
     apiKey:process.env.COHERE_API_KEY
 })
 
-const response = await model.invoke(userInput)
-
-console.log(response.text);
