@@ -1,4 +1,5 @@
 import { ChatCohere, CohereEmbeddings } from "@langchain/cohere";
+import { HumanMessage, ToolMessage } from "@langchain/core/messages";
 import { Pinecone } from "@pinecone-database/pinecone";
 import "dotenv/config";
 
@@ -34,8 +35,6 @@ const result = await index.documents.search({
   includeFields: ["content"],
 });
 
-console.log(result);
-
 
 // chat model for user input
 
@@ -44,6 +43,14 @@ const model = new ChatCohere({
   apiKey: process.env.COHERE_API_KEY,
 });
 
-const response = await model.invoke(userInput);
+const messages = [];
 
-console.log(response.text);
+messages.push(new HumanMessage(userInput));
+
+messages.push(new ToolMessage({
+    content:JSON.stringify(result)
+}))
+
+const aiResponse = await model.invoke(messages)
+
+console.log(aiResponse);
