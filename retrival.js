@@ -3,7 +3,7 @@ import { HumanMessage, ToolMessage } from "@langchain/core/messages";
 import { Pinecone } from "@pinecone-database/pinecone";
 import "dotenv/config";
 
-const userInput = "Tell me about Aarav's first internship";
+const userInput = "pratap's full name and contact details";
 
 //embedding the user input
 

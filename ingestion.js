@@ -8,7 +8,7 @@ import { Pinecone } from "@pinecone-database/pinecone";
 dotenv.config();
 
 const parser = new PDFParse({
-  data: await fs.readFile("./story.pdf"),
+  data: await fs.readFile("./Pratap_Bhingare_RAG_Knowledge_Base.pdf"),
 });
 
 // Retrival of text from the pdf file
